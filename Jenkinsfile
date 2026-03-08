@@ -4,15 +4,11 @@ pipeline {
 
     environment {
 
-        // Terraform Cloud API Token stored in Jenkins credentials
         TF_TOKEN_app_terraform_io = credentials('terraform-cloud-token')
         TFC_TOKEN = credentials('terraform-cloud-token')
 
-        // Terraform Cloud configuration
         TFC_ORG = "SunnyOrg92"
         TFC_WORKSPACE = "Jenkins_HCP_Test_Code_Integration"
-
-        // Terraform Cloud API URL
         TFC_API = "https://app.terraform.io/api/v2"
 
     }
@@ -26,39 +22,54 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 echo "Checking out Terraform repository..."
-                git branch: 'master', url: 'https://github.com/sunny92-bit/Jenkins_HCP_Test_Code_Integration.git'
+                git branch: 'feature', url: 'https://github.com/sunny92-bit/Jenkins_HCP_Test_Code_Integration.git'
             }
         }
 
         stage('Terraform Format Check') {
             steps {
-                echo "Checking Terraform formatting..."
-                sh '''
-                terraform fmt -check -recursive
-                '''
+                sh 'terraform fmt -check -recursive'
             }
         }
 
         stage('Terraform Init') {
             steps {
-                echo "Initializing Terraform..."
-                sh '''
-                terraform init
-                '''
+                sh 'terraform init'
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                echo "Validating Terraform configuration..."
+                sh 'terraform validate'
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                echo "Generating Terraform execution plan..."
+
                 sh '''
-                terraform validate
+                terraform plan -out=tfplan
+                terraform show tfplan
                 '''
             }
         }
 
+        stage('Approval') {
+            steps {
+                input message: "Approve Terraform Deployment?", ok: "Deploy"
+            }
+        }
+        stage('Terraform Apply') {
+            steps {
+                echo "Applying Terraform configuration..."
 
-
+                sh '''
+                terraform apply -auto-approve tfplan
+                terraform show tfplan
+                '''
+            }
+        }
         stage('Trigger Terraform Cloud Run') {
             steps {
                 script {
@@ -103,14 +114,7 @@ pipeline {
                     }' \
                     ${TFC_API}/runs
                     """
-
                 }
-            }
-        }
-
-        stage('Approval') {
-            steps {
-                input message: "Approve Terraform Apply?", ok: "Apply"
             }
         }
 
