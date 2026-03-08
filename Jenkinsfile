@@ -8,6 +8,11 @@ pipeline {
         TF_TOKEN_app_terraform_io = credentials('terraform-cloud-token')
         TFC_TOKEN = credentials('terraform-cloud-token')
 
+//TF_TOKEN_app_terraform_io → used by terraform init
+
+//TFC_TOKEN → used by your curl API calls
+
+
         // Terraform Cloud configuration
         TFC_ORG = "SunnyOrg92"
         TFC_WORKSPACE = "Jenkins_HCP_Test_Code_Integration"
