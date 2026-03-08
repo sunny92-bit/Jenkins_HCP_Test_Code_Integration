@@ -3,7 +3,7 @@ terraform {
     organization = "SunnyOrg92"
 
     workspaces {
-      name = "Jenkins_HCP_Integration_Test_Code"
+      name = "Jenkins_HCP_Test_Code_Integration"
     }
   }
 }
