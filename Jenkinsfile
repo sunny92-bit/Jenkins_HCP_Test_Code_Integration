@@ -4,20 +4,11 @@ pipeline {
 
     environment {
 
-        // Terraform Cloud API Token stored in Jenkins credentials
         TF_TOKEN_app_terraform_io = credentials('terraform-cloud-token')
         TFC_TOKEN = credentials('terraform-cloud-token')
 
-//TF_TOKEN_app_terraform_io → used by terraform init
-
-//TFC_TOKEN → used by your curl API calls
-
-
-        // Terraform Cloud configuration
         TFC_ORG = "SunnyOrg92"
         TFC_WORKSPACE = "Jenkins_HCP_Test_Code_Integration"
-
-        // Terraform Cloud API URL
         TFC_API = "https://app.terraform.io/api/v2"
 
     }
@@ -37,32 +28,38 @@ pipeline {
 
         stage('Terraform Format Check') {
             steps {
-                echo "Checking Terraform formatting..."
-                sh '''
-                terraform fmt -check -recursive
-                '''
+                sh 'terraform fmt -check -recursive'
             }
         }
 
         stage('Terraform Init') {
             steps {
-                echo "Initializing Terraform..."
-                sh '''
-                terraform init
-                '''
+                sh 'terraform init'
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                echo "Validating Terraform configuration..."
+                sh 'terraform validate'
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                echo "Generating Terraform execution plan..."
+
                 sh '''
-                terraform validate
+                terraform plan -out=tfplan
+                terraform show tfplan
                 '''
             }
         }
 
-
+        stage('Approval') {
+            steps {
+                input message: "Approve Terraform Deployment?", ok: "Deploy"
+            }
+        }
 
         stage('Trigger Terraform Cloud Run') {
             steps {
@@ -108,14 +105,7 @@ pipeline {
                     }' \
                     ${TFC_API}/runs
                     """
-
                 }
-            }
-        }
-
-        stage('Approval') {
-            steps {
-                input message: "Approve Terraform Apply?", ok: "Apply"
             }
         }
 
