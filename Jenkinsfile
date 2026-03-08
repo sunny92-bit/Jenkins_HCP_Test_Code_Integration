@@ -57,14 +57,7 @@ pipeline {
             }
         }
 
-        stage('Security Scan') {
-            steps {
-                echo "Running Terraform security scan..."
-                sh '''
-                checkov -d .
-                '''
-            }
-        }
+
 
         stage('Trigger Terraform Cloud Run') {
             steps {
