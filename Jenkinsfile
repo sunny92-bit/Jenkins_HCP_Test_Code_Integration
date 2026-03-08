@@ -60,7 +60,16 @@ pipeline {
                 input message: "Approve Terraform Deployment?", ok: "Deploy"
             }
         }
+        stage('Terraform Apply') {
+            steps {
+                echo "Applying Terraform configuration..."
 
+                sh '''
+                terraform apply -auto-approve tfplan
+                terraform show tfplan
+                '''
+            }
+        }
         stage('Trigger Terraform Cloud Run') {
             steps {
                 script {
