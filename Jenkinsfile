@@ -5,6 +5,7 @@ pipeline {
     environment {
 
         // Terraform Cloud API Token stored in Jenkins credentials
+        TF_TOKEN_app_terraform_io = credentials('terraform-cloud-token')
         TFC_TOKEN = credentials('terraform-cloud-token')
 
         // Terraform Cloud configuration
