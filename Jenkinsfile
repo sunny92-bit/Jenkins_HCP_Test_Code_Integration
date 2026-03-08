@@ -25,7 +25,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 echo "Checking out Terraform repository..."
-                git branch: 'main', url: 'https://github.com/sunny92-bit/Jenkins_HCP_Test_Code_Integration.git'
+                git branch: 'master', url: 'https://github.com/sunny92-bit/Jenkins_HCP_Test_Code_Integration.git'
             }
         }
 
